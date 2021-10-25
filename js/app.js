@@ -21,26 +21,30 @@ var graph = new Object();
 var states = new Array();
 var partitions = new Object();
 var state2idx = new Object();
+var vis = new Array();
 
 var started = false;
+var done = false;
 var start_state = "BBBGGG";
 var goal_partition = "GB";
 
 var current_state;
+var time = 0;
 
 function start(){
     if (started) return;
 
     initialize();
     started = true;
-    var par = document.createElement("p");
-    par.innerHTML = "Welcome to Soirée Disarray!"
-    document.body.appendChild(par);
+    var welcome = document.createElement("P");
+    welcome.innerHTML = "Welcome to Soirée Disarray!"
+    document.body.appendChild(welcome);
 
     // Generate image tags.
+    current_state = start_state;
     images = new Array();
     for (let i = 0; i < 6; i++){
-        var s = start_state.charAt(i) == 'B' ? "male" : "female"
+        var s = current_state.charAt(i) == 'B' ? "male" : "female"
         images.push(generate_image(s, i));
     }
 
@@ -48,6 +52,84 @@ function start(){
         document.body.appendChild(images[i]);
     }
     console.log(images)
+
+    var next_btn = document.createElement("BUTTON");
+    next_btn.innerHTML = "Next";
+    next_btn.setAttribute("onClick", "apply_heuristic_step()");
+    document.body.appendChild(next_btn);
+
+    document.body.appendChild(document.createElement("BR"));
+    // Display time.
+    var currtime = document.createElement("P");
+    currtime.setAttribute("id", "time");
+    currtime.innerHTML = "Time: "+time.toString();
+    document.body.appendChild(currtime);
+}
+
+function apply_heuristic_step(){
+    if (done) return;
+    if (partitions[goal_partition].includes(current_state)) {
+        var congrats = document.createElement("P");
+        congrats.innerHTML = "Congratulations!"
+        document.body.appendChild(congrats);
+        done = true;
+        return;
+    }
+
+    vis[state2idx[current_state]] = true;
+
+    // Finding the best child node to expand to.
+    var children = Array();
+    var n = graph[current_state].length;
+
+    for (let i = 0; i < n; i++){
+        var state = graph[current_state][i].to;
+        var score = heuristic_score(state, goal_partition);
+        var weight = graph[current_state][i].weight;
+
+        if (vis[state2idx[state]]) continue;
+        children.push({
+            score: score,
+            weight: weight,
+            state: state
+        })
+    }
+
+    children.sort((left, right) => {
+        if (left.score == right.score && left.weight == right.weight){
+            if (left.state < right.state) return -1;
+            else if (left.state > right.state) return 1;
+            else return 0;
+        }
+        else if (left.score == right.score) {
+            return left.weight - right.weight;
+        }
+        return left.score-right.score;
+    });
+
+    var prev_state = current_state;
+    var v = children[0];
+    current_state = v.state;   
+    time += v.weight;
+    
+    // Update time
+    var currtime = document.getElementById("time");
+    currtime.innerHTML = "Time: "+time.toString();
+
+    // Update images
+    var move = new Array();
+    for (let i = 0; i < 6; i++){
+        if (current_state.charAt(i) != prev_state.charAt(i)){
+            move.push(i);
+        }
+    }
+
+    var img1 = document.getElementById("img"+move[0].toString())
+    var img2 = document.getElementById("img"+move[1].toString())
+    var src1 = current_state.charAt(move[0]) == "B" ? "male" : "female";
+    var src2 = current_state.charAt(move[1]) == "B" ? "male" : "female";
+    img1.setAttribute("src", "assets/"+src1+".png");
+    img2.setAttribute("src", "assets/"+src2+".png");
 }
 
 // Takes in male/female and generates the appropriate image tag.
@@ -69,6 +151,7 @@ function initialize(){
     // Turn raw states into their corresponding 6-bit number
     for (let i = 0; i < n; i++){
         state2idx[states[i]] = i;
+        vis.push(false);
     }
     
     // Fill in partitions.
