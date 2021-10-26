@@ -5,17 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/styles.css">
         <title>Soirée Disarray</title>
+        
     </head>
 
-    <body>
-        <h1>Soirée Disarray</h1>
-        <!-- <canvas id="canvas", height="400", width="500"></canvas> -->
-        <button onclick="start()">Click to Start!</button>
-        <div id="game"></div>
-        <br>
-        <div id="heuristic">
-            
+    <body onload="start()">
+        <h1 id="title">Soirée Disarray</h1>
+        <div id="game">
+            <p>
+                Welcome to Soirée Disarray!<br>
+                Drag and drop the images to select a starting state.<br>
+                The goal partition is currently 
+                <select id="partition_select" onchange="change_goal()"></select>
+            </p>
+            <div id="img_div"></div>
         </div>
+        <br>
+        <div id="heuristic"></div>
         <script src="js/app.js"></script>
     </body>
 

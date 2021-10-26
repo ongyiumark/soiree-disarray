@@ -1,0 +1,14 @@
+body {
+    background-color: azure;
+}
+
+img {
+    border-radius: 100%;
+    border: 1px solid #ddd;
+    margin: auto;
+}
+
+#title {
+    margin: auto;
+    text-align: center;
+}

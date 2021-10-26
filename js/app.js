@@ -28,18 +28,20 @@ function start(){
     if (started) return;
 
     initialize();
-
     var game_div = document.getElementById("game");
-
+    var img_div = document.getElementById("img_div")
     started = true;
-    var welcome = document.createElement("P");
-    var tmp = "";
-    tmp += "Welcome to Soirée Disarray!<br>";
-    tmp += "Drag and drop the images to select a starting state.<br>";
-    tmp += `The goal partition is currently '${goal_partition}'.`;
-    welcome.innerHTML = tmp;
-    game_div.appendChild(welcome);
 
+    // Fill partition options
+    var sel = document.getElementById("partition_select")
+    for (var key in partitions){
+        var opt = document.createElement("OPTION");
+        opt.setAttribute("value", key)
+        opt.innerHTML = key;
+
+        sel.appendChild(opt);
+    }
+    
     // Generate image tags.
     var images = new Array();
     for (let i = 0; i < 6; i++){
@@ -48,7 +50,7 @@ function start(){
     }
 
     for (let i = 0; i < 6; i++){
-        game_div.appendChild(images[i]);
+        img_div.appendChild(images[i]);
     }
 
     game_div.appendChild(document.createElement("BR"));
@@ -353,3 +355,8 @@ function drop(ev){
     start_state = tmp.join('');
 }
 
+// Change current goal partitions
+function change_goal(){
+    var sel = document.getElementById("partition_select");
+    goal_partition = sel.value;
+}
