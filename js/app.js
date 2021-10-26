@@ -13,7 +13,9 @@ var goal_partition = "GB";
 var current_state = "";
 var time = 0;
 var heuristic_solution = new Array();
+var heuristic_times = new Array();
 var heuristic_log = "";
+var heuristic_idx = 0;
 
 // Helper function to swap two elements of an array.
 Array.prototype.swap = function(a,b){
@@ -31,14 +33,18 @@ function start(){
 
     started = true;
     var welcome = document.createElement("P");
-    welcome.innerHTML = "Welcome to Soirée Disarray!"
+    var tmp = "";
+    tmp += "Welcome to Soirée Disarray!<br>";
+    tmp += "Drag and drop the images to select a starting state.<br>";
+    tmp += `The goal partition is currently '${goal_partition}'.`;
+    welcome.innerHTML = tmp;
     game_div.appendChild(welcome);
 
     // Generate image tags.
-    images = new Array();
+    var images = new Array();
     for (let i = 0; i < 6; i++){
         var s = start_state.charAt(i) == 'B' ? "male" : "female"
-        images.push(generate_image(s, i, true));
+        images.push(generate_image(s, i, "img", true));
     }
 
     for (let i = 0; i < 6; i++){
@@ -59,9 +65,11 @@ function apply_heuristic(){
     time = 0;
     heuristic_log = "";
     heuristic_solution = new Array();
+    heuristic_times = new Array();
     
     while(true){
         heuristic_solution.push(current_state);
+        heuristic_times.push(time);
 
         heuristic_log += `Checking if '${current_state}' satisfies the '${goal_partition}' parition...<br>`;
         if (partitions[goal_partition].includes(current_state)) {
@@ -121,8 +129,47 @@ function apply_heuristic(){
 }
 
 function display_heuristic(){
-    // Display Log to Screen.
     var div = document.getElementById("heuristic");
+    var found = false;
+
+    // Display solution
+    var images = new Array();
+    for (let i = 0; i < 6; i++){
+        var s = heuristic_solution[0].charAt(i) == 'B' ? "male" : "female"
+        
+        var oldimg = document.getElementById("imgh"+i.toString());
+        if (oldimg) {
+            oldimg.setAttribute("src", "assets/"+s+".png");
+            found = true;
+        }
+        if (!found){
+            images.push(generate_image(s, i, "imgh", false));
+            div.appendChild(images[i]);
+        } 
+    }
+    heuristic_idx = 0;
+
+    if (!found){
+        var nextbtn = document.createElement("BUTTON");
+        var prevbtn = document.createElement("BUTTON");
+        nextbtn.setAttribute("onclick", "heuristic_next()");
+        prevbtn.setAttribute("onclick", "heuristic_prev()");
+        nextbtn.innerHTML = "Next";
+        prevbtn.innerHTML = "Prev";
+        div.appendChild(prevbtn); 
+        div.appendChild(nextbtn);
+
+        var currtime = document.createElement("P");
+        currtime.innerHTML = "Time: 0";
+        currtime.setAttribute("id", "htime");
+
+        div.appendChild(document.createElement("BR"));
+        div.appendChild(currtime);
+        div.appendChild(document.createElement("BR"));
+    }
+    update_hdisplay();
+
+    // Display Log to Screen.
     var iframe = document.getElementById("heuristic_frame");
     if (!iframe){
         iframe = document.createElement("IFRAME");
@@ -135,17 +182,39 @@ function display_heuristic(){
     }
     
     iframe.setAttribute("srcdoc", `<p>${heuristic_log}</p>`)
+}
 
-    // Dis
+function update_hdisplay(idx){
+    var state = heuristic_solution[heuristic_idx];
+    for (let i = 0; i < 6; i++){
+        var s = state.charAt(i) == 'B' ? "male" : "female";
+        var img = document.getElementById("imgh"+i.toString());
+        img.setAttribute("src", "assets/"+s+".png");
+    }
+
+    var currtime = document.getElementById("htime");
+    currtime.innerHTML = "Time: "+heuristic_times[heuristic_idx].toString();
+}
+
+function heuristic_next(){
+    if (heuristic_idx == heuristic_solution.length-1) return;
+    heuristic_idx += 1;
+    update_hdisplay(heuristic_idx);
+}
+
+function heuristic_prev(){
+    if (heuristic_idx == 0) return;
+    heuristic_idx -= 1;
+    update_hdisplay(heuristic_idx);
 }
 
 // Takes in male/female and generates the appropriate image tag.
-function generate_image(s, id, drag){
+function generate_image(s, id, prefix, drag){
     var res = document.createElement("IMG");
     res.setAttribute("src", "assets/"+s+".png");
     res.setAttribute("height", "150");
     res.setAttribute("alt", s);
-    res.setAttribute("id", "img"+id.toString());
+    res.setAttribute("id", prefix+id.toString());
 
     // Draggable attributes.
     if (drag){
