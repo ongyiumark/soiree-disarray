@@ -1,21 +1,3 @@
-/*function draw() {
-    const canvas = document.querySelector("#canvas");
-
-    if (!canvas.getContext) return;
-
-    const ctx = canvas.getContext('2d');
-    
-    ctx.strokeStyle = 'red';
-    ctx.linWidth = 5;
-
-    ctx.beginPath();
-    ctx.moveTo(100,100);
-    ctx.lineTo(300,100);
-    ctx.stroke();
-}
-
-draw(); */
-
 // Global Variables
 var graph = new Object();
 var states = new Array();
@@ -24,121 +6,154 @@ var state2idx = new Object();
 var vis = new Array();
 
 var started = false;
-var done = false;
 var start_state = "BBBGGG";
 var goal_partition = "GB";
 
-var current_state;
+// Heuristic Variables
+var current_state = "";
 var time = 0;
+var heuristic_solution = new Array();
+var heuristic_log = "";
+
+// Helper function to swap two elements of an array.
+Array.prototype.swap = function(a,b){
+    var tmp = this[a];
+    this[a] = this[b];
+    this[b] = tmp;
+}
 
 function start(){
     if (started) return;
 
     initialize();
+
+    var game_div = document.getElementById("game");
+
     started = true;
     var welcome = document.createElement("P");
     welcome.innerHTML = "Welcome to Soirée Disarray!"
-    document.body.appendChild(welcome);
+    game_div.appendChild(welcome);
 
     // Generate image tags.
-    current_state = start_state;
     images = new Array();
     for (let i = 0; i < 6; i++){
-        var s = current_state.charAt(i) == 'B' ? "male" : "female"
-        images.push(generate_image(s, i));
+        var s = start_state.charAt(i) == 'B' ? "male" : "female"
+        images.push(generate_image(s, i, true));
     }
 
     for (let i = 0; i < 6; i++){
-        document.body.appendChild(images[i]);
+        game_div.appendChild(images[i]);
     }
-    console.log(images)
+
+    game_div.appendChild(document.createElement("BR"));
 
     var next_btn = document.createElement("BUTTON");
-    next_btn.innerHTML = "Next";
-    next_btn.setAttribute("onClick", "apply_heuristic_step()");
-    document.body.appendChild(next_btn);
-
-    document.body.appendChild(document.createElement("BR"));
-    // Display time.
-    var currtime = document.createElement("P");
-    currtime.setAttribute("id", "time");
-    currtime.innerHTML = "Time: "+time.toString();
-    document.body.appendChild(currtime);
+    next_btn.innerHTML = "Apply Heuristic";
+    next_btn.setAttribute("onClick", "apply_heuristic()");
+    game_div.appendChild(next_btn);
 }
 
-function apply_heuristic_step(){
-    if (done) return;
-    if (partitions[goal_partition].includes(current_state)) {
-        var congrats = document.createElement("P");
-        congrats.innerHTML = "Congratulations!"
-        document.body.appendChild(congrats);
-        done = true;
-        return;
-    }
-
-    vis[state2idx[current_state]] = true;
-
-    // Finding the best child node to expand to.
-    var children = Array();
-    var n = graph[current_state].length;
-
-    for (let i = 0; i < n; i++){
-        var state = graph[current_state][i].to;
-        var score = heuristic_score(state, goal_partition);
-        var weight = graph[current_state][i].weight;
-
-        if (vis[state2idx[state]]) continue;
-        children.push({
-            score: score,
-            weight: weight,
-            state: state
-        })
-    }
-
-    children.sort((left, right) => {
-        if (left.score == right.score && left.weight == right.weight){
-            if (left.state < right.state) return -1;
-            else if (left.state > right.state) return 1;
-            else return 0;
-        }
-        else if (left.score == right.score) {
-            return left.weight - right.weight;
-        }
-        return left.score-right.score;
-    });
-
-    var prev_state = current_state;
-    var v = children[0];
-    current_state = v.state;   
-    time += v.weight;
+function apply_heuristic(){
+    current_state = start_state;
+    for (let i = 0; i < states.length; i++) vis[i] = false;
+    time = 0;
+    heuristic_log = "";
+    heuristic_solution = new Array();
     
-    // Update time
-    var currtime = document.getElementById("time");
-    currtime.innerHTML = "Time: "+time.toString();
+    while(true){
+        heuristic_solution.push(current_state);
 
-    // Update images
-    var move = new Array();
-    for (let i = 0; i < 6; i++){
-        if (current_state.charAt(i) != prev_state.charAt(i)){
-            move.push(i);
+        heuristic_log += `Checking if '${current_state}' satisfies the '${goal_partition}' parition...<br>`;
+        if (partitions[goal_partition].includes(current_state)) {
+            heuristic_log += `'${current_state}' satisfies the '${goal_partition}' parition!<br>`;
+            heuristic_log += `Game Over.<br><br>`;
+            break;
         }
-    }
+    
+        heuristic_log += `Marking '${current_state}' as visited.<br>`;
+        vis[state2idx[current_state]] = true;
+    
+        // Finding the best child node to expand to.
+        var children = Array();
+        var n = graph[current_state].length;
+    
+        for (let i = 0; i < n; i++){
+            var state = graph[current_state][i].to;
+            var score = heuristic_score(state, goal_partition);
+            var weight = graph[current_state][i].weight;
+            
+            heuristic_log += `Considering going to '${state}'...<br>`
+            if (vis[state2idx[state]]) {
+                heuristic_log += `'${state}' has already been visited. Ignoring...<br>`
+                continue;
+            }
 
-    var img1 = document.getElementById("img"+move[0].toString())
-    var img2 = document.getElementById("img"+move[1].toString())
-    var src1 = current_state.charAt(move[0]) == "B" ? "male" : "female";
-    var src2 = current_state.charAt(move[1]) == "B" ? "male" : "female";
-    img1.setAttribute("src", "assets/"+src1+".png");
-    img2.setAttribute("src", "assets/"+src2+".png");
+            children.push({
+                score: score,
+                weight: weight,
+                state: state
+            });
+            heuristic_log += `'${state}' has a heuristic score of ${score} with cost ${weight}.<br>`;
+        }
+    
+        children.sort((left, right) => {
+            if (left.score == right.score && left.weight == right.weight){
+                if (left.state < right.state) return -1;
+                else if (left.state > right.state) return 1;
+                else return 0;
+            }
+            else if (left.score == right.score) {
+                return left.weight - right.weight;
+            }
+            return left.score-right.score;
+        });
+    
+        var prev_state = current_state;
+        var v = children[0];
+        current_state = v.state;   
+        time += v.weight;
+        heuristic_log += `Expanding to state '${v.state}' with score ${v.score} and cost ${v.weight}...<br><br>`;
+    }    
+
+    heuristic_log += `The solution is ${heuristic_solution.join(", ")}.<br>`;
+    heuristic_log += `This took ${time} units of time.<br>`;
+    display_heuristic();
+}
+
+function display_heuristic(){
+    // Display Log to Screen.
+    var div = document.getElementById("heuristic");
+    var iframe = document.getElementById("heuristic_frame");
+    if (!iframe){
+        iframe = document.createElement("IFRAME");
+        iframe.setAttribute("width", "500");
+        iframe.setAttribute("height", "200");
+        iframe.setAttribute("marginwidth", "50");
+        iframe.setAttribute("scrolling", "yes");
+        iframe.setAttribute("id", "heuristic_frame");
+        div.appendChild(iframe);
+    }
+    
+    iframe.setAttribute("srcdoc", `<p>${heuristic_log}</p>`)
+
+    // Dis
 }
 
 // Takes in male/female and generates the appropriate image tag.
-function generate_image(s, id){
+function generate_image(s, id, drag){
     var res = document.createElement("IMG");
     res.setAttribute("src", "assets/"+s+".png");
     res.setAttribute("height", "150");
     res.setAttribute("alt", s);
-    res.setAttribute("id", "img"+id.toString())
+    res.setAttribute("id", "img"+id.toString());
+
+    // Draggable attributes.
+    if (drag){
+        res.setAttribute("ondrop", "drop(event)");
+        res.setAttribute("ondragover","allow_drop(event)")
+        res.setAttribute("draggable", "true");
+        res.setAttribute("ondragstart","drag(event)");
+    }
     return res;
 }
 
@@ -170,7 +185,7 @@ function initialize(){
             for (let b = a+1; b < 6; b++){
                 if (b-a > 2) break;
                 if (arr[a] == arr[b]) continue;
-                [arr[a], arr[b]] = [arr[b], arr[a]];
+                arr.swap(a,b);
                 
                 var nstate = arr.join('');
                 var w = (b-a == 1 ? 2 : 3);
@@ -180,7 +195,7 @@ function initialize(){
                     weight: w
                 });
 
-                [arr[a], arr[b]] = [arr[b], arr[a]];
+                arr.swap(a,b);
             }
         }
     }
@@ -239,3 +254,33 @@ function heuristic_score(state, goal){
     }
     return res;
 }
+
+// Allow drag and drop
+function allow_drop(ev){
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev){
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+
+    // Swap images
+    var img1 = document.getElementById(data);
+    var img2 = ev.target;
+    var src1 = img1.getAttribute("src");
+    var src2 = img2.getAttribute("src");
+    img1.setAttribute("src", src2);
+    img2.setAttribute("src", src1);
+
+    // Update start state.
+    var idx1 = parseInt(img1.getAttribute("id")[3]);
+    var idx2 = parseInt(img2.getAttribute("id")[3]);
+    var tmp = start_state.split('');
+    tmp.swap(idx1,idx2);
+    start_state = tmp.join('');
+}
+
