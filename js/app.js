@@ -151,6 +151,19 @@ function display_heuristic(){
     }
     heuristic_idx = 0;
 
+    // Display Log to Screen.
+    var iframe = document.getElementById("heuristic_frame");
+    if (!iframe){
+        iframe = document.createElement("IFRAME");
+        iframe.setAttribute("marginwidth", "50");
+        iframe.setAttribute("scrolling", "yes");
+        iframe.setAttribute("id", "heuristic_frame");
+        div.appendChild(iframe);
+    }
+    
+    iframe.setAttribute("srcdoc", `<p>${heuristic_log}</p>`)
+    div.appendChild(document.createElement("BR"));
+
     if (!found){
         var nextbtn = document.createElement("BUTTON");
         var prevbtn = document.createElement("BUTTON");
@@ -171,19 +184,7 @@ function display_heuristic(){
     }
     update_hdisplay();
 
-    // Display Log to Screen.
-    var iframe = document.getElementById("heuristic_frame");
-    if (!iframe){
-        iframe = document.createElement("IFRAME");
-        iframe.setAttribute("width", "500");
-        iframe.setAttribute("height", "200");
-        iframe.setAttribute("marginwidth", "50");
-        iframe.setAttribute("scrolling", "yes");
-        iframe.setAttribute("id", "heuristic_frame");
-        div.appendChild(iframe);
-    }
     
-    iframe.setAttribute("srcdoc", `<p>${heuristic_log}</p>`)
 }
 
 function update_hdisplay(idx){
