@@ -7,7 +7,7 @@ var vis = new Array();
 
 var started = false;
 var start_state = "BBBGGG";
-var goal_partition = "GB";
+var goal_partition = "BG";
 
 // Heuristic Variables
 var current_state = "";
@@ -16,6 +16,17 @@ var heuristic_solution = new Array();
 var heuristic_times = new Array();
 var heuristic_log = "";
 var heuristic_idx = 0;
+
+// BFS Variables
+var bfs_solution = new Array();
+var bfs_times = new Array();
+var bfs_log = "";
+var bfs_idx = 0;
+
+var sol = new Array();
+var sol_times = new Array();
+var sol_idx = 0;
+var sol_log = "";
 
 // Helper function to swap two elements of an array.
 Array.prototype.swap = function(a,b){
@@ -55,13 +66,102 @@ function start(){
 
     game_div.appendChild(document.createElement("BR"));
 
-    var next_btn = document.createElement("BUTTON");
-    next_btn.innerHTML = "Apply Heuristic";
-    next_btn.setAttribute("onClick", "apply_heuristic()");
-    game_div.appendChild(next_btn);
+    var hbtn = document.createElement("BUTTON");
+    hbtn.innerHTML = "Apply Heuristic";
+    hbtn.setAttribute("onClick", "apply_heuristic()");
+    game_div.appendChild(hbtn);
+
+    var hbtn = document.createElement("BUTTON");
+    hbtn.innerHTML = "Apply BFS";
+    hbtn.setAttribute("onClick", "apply_bfs()");
+    game_div.appendChild(hbtn);
+}
+
+function apply_bfs(){
+    var hdiv = document.getElementById("heuristic");
+    var bfsdiv = document.getElementById("bfs");
+    hdiv.setAttribute("hidden", "");
+    bfsdiv.removeAttribute("hidden");
+
+    bfs_log = "";
+    bfs_solution = new Array();
+    bfs_times = new Array();
+
+    var parents = new Object();
+    var queue = new Array();
+
+    bfs_log += `Enqueing ${start_state}...<br>`;
+    var idx = 0;
+    queue.push({
+        state: start_state,
+        idx: idx
+    });
+    var last_state = new Object();
+    while(queue.length > 0){
+        var u = queue[0];
+        queue.shift();
+        bfs_log += `Dequeing ${u.state}...<br>`;
+
+        bfs_log += `Checking if '${u.state}' satisfies the '${goal_partition}' partition...<br>`;
+        if (partitions[goal_partition].includes(u.state)) {
+            bfs_log += `'${u.state}' satisfies the '${goal_partition}' partition!<br>`;
+            bfs_log += `Game Over.<br><br>`;
+            last_state = u;
+            break;
+        }
+        bfs_log += `'${u.state}' is not a goal state. Expanding...<br>`;
+
+        var n = graph[u.state].length;
+        for (let i = 0; i < n; i++){
+            var v = graph[u.state][i].to;
+            bfs_log += `Enqueing state '${v}'...<br>`;
+            idx += 1;
+            queue.push({
+                state: v,
+                idx: idx
+            });
+            if (i == n-1) bfs_log += "<br>";
+            parents[v+idx.toString()] = u;
+        }        
+    }
+
+    var tmp = last_state;
+    while(tmp.state != start_state){
+        bfs_solution.push(tmp.state);
+        var par = parents[tmp.state+tmp.idx.toString()];
+        tmp = par;
+    }
+    bfs_solution.push(start_state);
+    bfs_solution.reverse();
+    
+    var currtime = 0;
+    bfs_times.push(currtime);
+    for (let i = 1; i < bfs_solution.length; i++){
+        var s1 = bfs_solution[i-1];
+        var s2 = bfs_solution[i];
+
+        var move = new Array();
+        for (let j = 0; j < 6; j++){
+            if (s1.charAt(j) != s2.charAt(j)) move.push(j);
+        }
+
+        var w = (move[1]-move[0] == 1 ? 2 : 3);
+
+        currtime += w;
+        bfs_times.push(currtime);
+    }
+
+    bfs_log += `The solution is ${bfs_solution.join(", ")}.<br>`;
+    bfs_log += `This took ${currtime} units of time.<br>`;
+    display_solution("bfs");
 }
 
 function apply_heuristic(){
+    var hdiv = document.getElementById("heuristic");
+    var bfsdiv = document.getElementById("bfs");
+    hdiv.removeAttribute("hidden");
+    bfsdiv.setAttribute("hidden", "");
+
     current_state = start_state;
     for (let i = 0; i < states.length; i++) vis[i] = false;
     time = 0;
@@ -127,48 +227,60 @@ function apply_heuristic(){
 
     heuristic_log += `The solution is ${heuristic_solution.join(", ")}.<br>`;
     heuristic_log += `This took ${time} units of time.<br>`;
-    display_heuristic();
+    display_solution("heuristic");
 }
 
-function display_heuristic(){
-    var div = document.getElementById("heuristic");
+function display_solution(sol_type){
+    var div = document.getElementById(sol_type);
     var found = false;
+    if (sol_type == "heuristic") {
+        sol = heuristic_solution;
+        sol_idx = heuristic_idx;
+        sol_log = heuristic_log;
+        sol_times = heuristic_times;
+    }
+    else {
+        sol = bfs_solution;
+        sol_idx = bfs_idx;
+        sol_log = bfs_log;
+        sol_times = bfs_times;
+    }
 
     // Display solution
     var images = new Array();
     for (let i = 0; i < 6; i++){
-        var s = heuristic_solution[0].charAt(i) == 'B' ? "male" : "female"
+        var s = sol[0].charAt(i) == 'B' ? "male" : "female"
         
-        var oldimg = document.getElementById("imgh"+i.toString());
+        var oldimg = document.getElementById("img_"+sol_type+i.toString());
         if (oldimg) {
             oldimg.setAttribute("src", "assets/"+s+".png");
             found = true;
         }
         if (!found){
-            images.push(generate_image(s, i, "imgh", false));
+            images.push(generate_image(s, i, "img_"+sol_type, false));
             div.appendChild(images[i]);
         } 
     }
     heuristic_idx = 0;
 
     // Display Log to Screen.
-    var iframe = document.getElementById("heuristic_frame");
+    var iframe = document.getElementById(sol_type+"_frame");
     if (!iframe){
         iframe = document.createElement("IFRAME");
         iframe.setAttribute("marginwidth", "50");
         iframe.setAttribute("scrolling", "yes");
-        iframe.setAttribute("id", "heuristic_frame");
+        iframe.setAttribute("id", sol_type+"_frame");
         div.appendChild(iframe);
     }
     
-    iframe.setAttribute("srcdoc", `<p>${heuristic_log}</p>`)
+    iframe.setAttribute("srcdoc", `<p>${sol_log}</p>`)
     div.appendChild(document.createElement("BR"));
 
     if (!found){
         var nextbtn = document.createElement("BUTTON");
         var prevbtn = document.createElement("BUTTON");
-        nextbtn.setAttribute("onclick", "heuristic_next()");
-        prevbtn.setAttribute("onclick", "heuristic_prev()");
+        nextbtn.setAttribute("onclick", "solution_next('"+sol_type+"')");
+        prevbtn.setAttribute("onclick", "solution_prev('"+sol_type+"')");
         nextbtn.innerHTML = "Next";
         prevbtn.innerHTML = "Prev";
         div.appendChild(prevbtn); 
@@ -176,39 +288,37 @@ function display_heuristic(){
 
         var currtime = document.createElement("P");
         currtime.innerHTML = "Time: 0";
-        currtime.setAttribute("id", "htime");
+        currtime.setAttribute("id", sol_type+"_sol_time");
 
         div.appendChild(document.createElement("BR"));
         div.appendChild(currtime);
         div.appendChild(document.createElement("BR"));
     }
-    update_hdisplay();
-
-    
+    update_display(sol_type);
 }
 
-function update_hdisplay(idx){
-    var state = heuristic_solution[heuristic_idx];
+function update_display(sol_type){
+    var state = sol[sol_idx];
     for (let i = 0; i < 6; i++){
         var s = state.charAt(i) == 'B' ? "male" : "female";
-        var img = document.getElementById("imgh"+i.toString());
+        var img = document.getElementById("img_"+sol_type+i.toString());
         img.setAttribute("src", "assets/"+s+".png");
     }
 
-    var currtime = document.getElementById("htime");
-    currtime.innerHTML = "Time: "+heuristic_times[heuristic_idx].toString();
+    var currtime = document.getElementById(sol_type+"_sol_time");
+    currtime.innerHTML = "Time: "+sol_times[sol_idx].toString();
 }
 
-function heuristic_next(){
-    if (heuristic_idx == heuristic_solution.length-1) return;
-    heuristic_idx += 1;
-    update_hdisplay(heuristic_idx);
+function solution_next(sol_type){
+    if (sol_idx == sol.length-1) return;
+    sol_idx += 1;
+    update_display(sol_type);
 }
 
-function heuristic_prev(){
-    if (heuristic_idx == 0) return;
-    heuristic_idx -= 1;
-    update_hdisplay(heuristic_idx);
+function solution_prev(sol_type){
+    if (sol_idx == 0) return;
+    sol_idx -= 1;
+    update_display(sol_type);
 }
 
 // Takes in male/female and generates the appropriate image tag.
@@ -356,7 +466,7 @@ function drop(ev){
     start_state = tmp.join('');
 }
 
-// Change current goal partitions
+// Change current goal partition.
 function change_goal(){
     var sel = document.getElementById("partition_select");
     goal_partition = sel.value;
