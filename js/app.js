@@ -71,9 +71,9 @@ function apply_heuristic(){
         heuristic_solution.push(current_state);
         heuristic_times.push(time);
 
-        heuristic_log += `Checking if '${current_state}' satisfies the '${goal_partition}' parition...<br>`;
+        heuristic_log += `Checking if '${current_state}' satisfies the '${goal_partition}' partition...<br>`;
         if (partitions[goal_partition].includes(current_state)) {
-            heuristic_log += `'${current_state}' satisfies the '${goal_partition}' parition!<br>`;
+            heuristic_log += `'${current_state}' satisfies the '${goal_partition}' partition!<br>`;
             heuristic_log += `Game Over.<br><br>`;
             break;
         }
