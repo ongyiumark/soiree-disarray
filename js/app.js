@@ -38,9 +38,10 @@ Array.prototype.swap = function(a,b){
 function start(){
     if (started) return;
 
+    
     initialize();
-    var game_div = document.getElementById("game");
-    var img_div = document.getElementById("img_div")
+    var gameDiv = document.getElementById("game");
+    var imgDiv = gameDiv.querySelector(".img-div");
     started = true;
 
     // Fill partition options
@@ -61,20 +62,20 @@ function start(){
     }
 
     for (let i = 0; i < 6; i++){
-        img_div.appendChild(images[i]);
+        imgDiv.appendChild(images[i]);
     }
 
-    game_div.appendChild(document.createElement("BR"));
+    gameDiv.appendChild(document.createElement("BR"));
 
     var hbtn = document.createElement("BUTTON");
     hbtn.innerHTML = "Apply Heuristic";
     hbtn.setAttribute("onClick", "apply_heuristic()");
-    game_div.appendChild(hbtn);
+    gameDiv.appendChild(hbtn);
 
     var hbtn = document.createElement("BUTTON");
     hbtn.innerHTML = "Apply BFS";
     hbtn.setAttribute("onClick", "apply_bfs()");
-    game_div.appendChild(hbtn);
+    gameDiv.appendChild(hbtn);
 }
 
 function apply_bfs(){
@@ -327,6 +328,7 @@ function generate_image(s, id, prefix, drag){
     res.setAttribute("src", "assets/"+s+".png");
     res.setAttribute("height", "150");
     res.setAttribute("alt", s);
+    res.setAttribute("class", "boygirl");
     res.setAttribute("id", prefix+id.toString());
 
     // Draggable attributes.

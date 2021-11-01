@@ -4,25 +4,45 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/styles.css">
+        <script src="js/display.js"></script>
+        <script src="js/app.js"></script>
         <title>Soirée Disarray</title>
-        
     </head>
 
     <body onload="start()">
-        <h1 id="title">Soirée Disarray</h1>
+        <div id="title">
+            <img src = "assets/title.png" alt ="Soirée Disarray" height="80px" id="title-img">
+        </div>
+
+        <div id="welcome">
+            <img src="assets/robot.png" alt="robot" class="robot">
+            <div class="chat-bubble tri-left border">
+                <p>
+                    SoirEe Disarray is a game where you are provided with a group of three boys and three girls.
+                    They are sitting in a row of chairs and all conversation has frozen,
+                    partly due to adolescent nerves and partly due to the fact that all the boys are huddled up
+                    and refusing to look at the girls (and vice-versa). 
+                    The boys are huddled at the left and the girls are huddled at the right.
+                    So, from left to right, the agent sees three boys followed by three girls in a row. 
+                    No one is having a good time, and it is your job as the organizer of this party to 
+                    make sure this dilemma is resolved. But get to it quickly,
+                    as the longer it takes to get them in the right order, 
+                    the closer their curfew will be and the less time they’ll have to enjoy.
+                </p>
+            </div>
+        </div>
         <div id="game">
             <p>
-                Welcome to Soirée Disarray!<br>
+                Welcome to Soiree Disarray!<br>
                 Drag and drop the images to select a starting state.<br>
                 The goal partition is currently 
                 <select id="partition_select" onchange="change_goal()"></select>
             </p>
-            <div id="img_div"></div>
+            <div class="img-div"></div>
         </div>
         <br>
-        <div id="heuristic"></div>
-        <div id="bfs"></div>
-        <script src="js/app.js"></script>
+        <div id="heuristic" hidden></div>
+        <div id="bfs" hidden></div>
     </body>
 
 </html>
