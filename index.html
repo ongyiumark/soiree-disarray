@@ -18,7 +18,7 @@
             <img src="assets/robot.png" alt="robot" class="robot">
             <div class="chat-bubble tri-left border">
                 <p>
-                    SoirEe Disarray is a game where you are provided with a group of three boys and three girls.
+                    Soiree Disarray is a game where you are provided with a group of three boys and three girls.
                     They are sitting in a row of chairs and all conversation has frozen,
                     partly due to adolescent nerves and partly due to the fact that all the boys are huddled up
                     and refusing to look at the girls (and vice-versa). 
@@ -36,13 +36,30 @@
                 Welcome to Soiree Disarray!<br>
                 Drag and drop the images to select a starting state.<br>
                 The goal partition is currently 
-                <select id="partition_select" onchange="change_goal()"></select>
+                <select id="partition-select" onchange="changeGoal()"></select>
             </p>
             <div class="img-div"></div>
+            <div class="button-div"></div>
         </div>
         <br>
-        <div id="heuristic" hidden></div>
-        <div id="bfs" hidden></div>
+        <div id="heuristic" hidden>
+            <p>Solution</p>
+            <div class="img-div"></div>
+            <div class="button-div"></div>
+        </div>
+        <div id="bfs" hidden>
+            <p>Solution:</p>
+            <div class="img-div"></div>
+            <div class="button-div"></div>
+        </div>
+        <div id="log" hidden>
+            <div class="chat-bubble border tri-right" id="log-display">
+                <p></p>
+            </div>
+
+            
+            <img src="assets/robot.png" alt="robot" class="robot">
+        </div>
     </body>
 
 </html>

@@ -23,11 +23,11 @@ body {
 /* Welcome div styles */
 #welcome {
     position: relative;
-    width: 80%;
+    width: 90%;
     margin: auto;
 }
 
-.robot {
+#welcome .robot {
     height: 150px;
     position: absolute;
     bottom: 0;
@@ -39,7 +39,7 @@ body {
 	margin: 40px;
     display: inline-block;
     position: relative;
-	width: 75%;
+	width: 70%;
 	height: auto;
 	background-color: #ffce96;
     padding: 1em;
@@ -89,8 +89,14 @@ body {
     color: #00303b;
 }
 
-.img-div {
+.img-div, .button-div {
     text-align: center;
+    margin: 1em 1em;
+}
+
+#heuristic p, #bfs p {
+    font-size: large;
+    font-family: silkscreenBold;
 }
 
 .boygirl {
@@ -100,17 +106,68 @@ body {
     display: inline-block;
 }
 
-iframe {
+#partition-select {
+    font-family: silkscreen;
+    color: #00303b;
+    background-color: #ffce96;
+}
+
+/* Log styles*/
+#log {
+    position: relative;
+    width: 90%;
+}
+
+#log-display p {
+    height: 200px;
+    margin: auto;
+    overflow-y: scroll;
+}
+
+#log .robot {
+    height: 150px;
+    position: absolute;
+    transform: scaleX(-1);
+    bottom: 0;
+    right: 0;
+}
+
+#log iframe {
     margin: 0;
     padding: 0;
     border: none;
-    width: 500px;
-    height: 150px;
+    width: 100%;
     margin-top: 20px;
     border-radius: 12px;
-    box-shadow: 4px 4px 14px #000;
     margin-left: 20px;
 }
+
+.tri-right::before{
+    content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	right: -40px;
+    left: auto;
+    bottom: 30px;
+	top: auto;
+	border: 20px solid;
+	border-color: transparent transparent #ff7777 #ff7777;
+}
+.tri-right::after{
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+    right: -20px;
+	left: auto;
+    bottom: 38px;
+	top: auto;
+	border: 12px solid;
+	border-color: transparent transparent #ffce96 #ffce96;
+}
+
+/* Button styles */
 
 button {
     display:inline-block;
