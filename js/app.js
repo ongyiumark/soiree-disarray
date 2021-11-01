@@ -25,11 +25,14 @@ var bfsIdx = 0;
 // Run onload.
 function start(){
     initialize();
+
+    // Display options on the page.
     displayGameSelector();
 }
 
 // Apply bfs from 'startState' to 'goalPartition'.
 function applyBfs(){
+    // Unhides div.
     showDiv("bfs");
 
     // Resetting variables.
@@ -118,6 +121,7 @@ function applyBfs(){
 
 // Apply heuristic from 'startState' to 'goalPartition'.
 function applyHeuristic(){
+    // Unhides div.
     showDiv("heuristic");
 
     // Resetting variables
