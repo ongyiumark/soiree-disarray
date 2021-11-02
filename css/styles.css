@@ -77,6 +77,32 @@ body {
 	border-color: transparent #ffce96 #ffce96 transparent;
 }
 
+.tri-right::before{
+    content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+	right: -40px;
+    left: auto;
+    bottom: 30px;
+	top: auto;
+	border: 20px solid;
+	border-color: transparent transparent #ff7777 #ff7777;
+}
+.tri-right::after{
+	content: ' ';
+	position: absolute;
+	width: 0;
+	height: 0;
+    right: -20px;
+	left: auto;
+    bottom: 38px;
+	top: auto;
+	border: 12px solid;
+	border-color: transparent transparent #ffce96 #ffce96;
+}
+
+
 /* Game div styles */
 #game, #heuristic, #bfs {
     background-color: #f1f2da;
@@ -140,31 +166,6 @@ body {
     margin-top: 20px;
     border-radius: 12px;
     margin-left: 20px;
-}
-
-.tri-right::before{
-    content: ' ';
-	position: absolute;
-	width: 0;
-	height: 0;
-	right: -40px;
-    left: auto;
-    bottom: 30px;
-	top: auto;
-	border: 20px solid;
-	border-color: transparent transparent #ff7777 #ff7777;
-}
-.tri-right::after{
-	content: ' ';
-	position: absolute;
-	width: 0;
-	height: 0;
-    right: -20px;
-	left: auto;
-    bottom: 38px;
-	top: auto;
-	border: 12px solid;
-	border-color: transparent transparent #ffce96 #ffce96;
 }
 
 /* Button styles */
