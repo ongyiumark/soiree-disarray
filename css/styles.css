@@ -187,3 +187,30 @@ button:hover{
     color:#00303b;
     background-color:#ff7777;
 }
+
+/* Log graph sytles */
+
+#log-vis {
+    position: relative;
+    margin: auto;
+    text-align: center;
+}
+
+.node {
+    display: inline-block;
+    position: relative;
+    padding-top: 32px;
+    text-align: center;
+}
+
+.graph-content {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: block;
+    background-color: #ffce96;
+    border-radius: 100%;
+    line-height: 30px;
+    margin: auto;
+    border: 3px solid #ff7777;
+}
