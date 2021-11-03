@@ -1,5 +1,6 @@
 // Holds tree information
 var bfsTree = new Object();
+var bfsTreePath = new Array();
 var heuristicTree = new Object();
 
 // Add listeners to the tree
@@ -73,7 +74,63 @@ function buildHeuristicTree(){
 }
 
 
+function bfsTreeHelper(u, cost){
+    var li = document.createElement("LI");
+    
+    // Insert node name
+    var span = document.createElement("SPAN");
+    span.innerHTML = u.state;
+    if (cost > 0) span.innerHTML += ` (cost: ${cost})`
+    spanClass = new Array();
+
+    var children = bfsTree[u.state+u.idx.toString()];
+
+    if (children != null && children.length > 0) spanClass.push("caret");
+    if (bfsTreePath.includes(u.state+u.idx.toString())) spanClass.push("solution");
+
+    span.setAttribute("class", spanClass.join(" "));
+    li.appendChild(span);
+
+    var ul = document.createElement("UL");
+    ul.setAttribute("class", "nested");
+
+    // Insert chidren
+    if (children != null && children.length > 0){
+        for (let i = 0; i < children.length; i++){
+            var child = children[i];
+            ul.appendChild(bfsTreeHelper(child, getCost(child.state, u.state)));
+        }
+        li.appendChild(ul);
+    }
+
+    return li;
+}
+
 function buildBfsTree(){
     var div = document.getElementById("tree");
-    div.setAttribute("hidden","");
+    var hid = div.getAttribute("hidden");
+    if (hid != null) div.removeAttribute("hidden");
+
+    div.innerHTML = '';
+    var treeHead = document.createElement("UL");
+    treeHead.setAttribute("id", "tree-head");
+
+    var start = bfsTreePath[0];
+
+    var childNodes = bfsTreeHelper({state: start.substr(0, 6), idx: parseInt(start.substr(6))}, -1);
+    treeHead.appendChild(childNodes);
+    div.appendChild(treeHead);
+
+    addTreeListeners();
+}
+
+function getCost(s1, s2){
+    var arr = new Array();
+    for (let i = 0; i < 6; i++){
+        if (s1.charAt(i) != s2.charAt(i)){
+            arr.push(i);
+        }
+    }
+    var d = arr[1]-arr[0];
+    return (d == 1 ? 2 : 3);
 }

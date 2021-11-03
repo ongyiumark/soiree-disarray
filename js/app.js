@@ -69,6 +69,9 @@ function applyBfs(){
             break;
         }
         addBfsLog(`'${u.state}' is not a goal state. Expanding...`);
+        
+        // Storing children for visualization.  
+        bfsTree[u.state+u.idx.toString()] = new Array();
 
         // Enqueuing child nodes.
         var n = graph[u.state].length;
@@ -83,6 +86,11 @@ function applyBfs(){
             if (i == n-1) addBfsLog("");
             // Mapping state (with its unique queue id) to its parent.
             parents[v+idx.toString()] = u;
+
+            bfsTree[u.state+u.idx.toString()].push({
+                state: v,
+                idx: idx
+            })
         }        
     }
 
@@ -90,11 +98,13 @@ function applyBfs(){
     var tmp = lastState;
     while(tmp.state != startState){
         bfsSol.push(tmp.state);
+        bfsTreePath.push(tmp.state+tmp.idx.toString());
         var par = parents[tmp.state+tmp.idx.toString()];
         tmp = par;
     }
     bfsSol.push(startState);
     bfsSol.reverse();
+    bfsTreePath.reverse();
     
     // Calculating time array.
     var currtime = 0;
