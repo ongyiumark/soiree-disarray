@@ -32,10 +32,11 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
+    transform: scaleX(-1);
 }
 
 /* Chat bubbles */
-.chat-bubble {
+.chat-bubble-left {
 	margin: 40px;
     display: inline-block;
     position: relative;
@@ -44,6 +45,19 @@ body {
 	background-color: #ffce96;
     padding: 1em;
     left: 150px;
+    text-align: left;
+    border-radius: 1em;
+}
+
+.chat-bubble-right {
+	margin: 40px;
+    display: inline-block;
+    position: relative;
+	width: 70%;
+	height: auto;
+	background-color: #ffce96;
+    padding: 1em;
+    right: -120px;
     text-align: left;
     border-radius: 1em;
 }
@@ -132,6 +146,7 @@ body {
     display: inline-block;
 }
 
+/* Select styles */
 #partition-select {
     font-family: silkscreen;
     color: #00303b;
@@ -142,6 +157,7 @@ body {
 #log {
     position: relative;
     width: 90%;
+    margin: auto;
 }
 
 #log-display p {
@@ -153,7 +169,6 @@ body {
 #log .robot {
     height: 150px;
     position: absolute;
-    transform: scaleX(-1);
     bottom: 0;
     right: 0;
 }
