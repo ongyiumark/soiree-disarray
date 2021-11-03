@@ -39,9 +39,13 @@ function applyBfs(){
     bfsLog = "";
     bfsSol = new Array();
     bfsTimes = new Array();
+    bfsTree = new Object();
+    bfsTreePath = new Array();
 
     var parents = new Object();
     var queue = new Array();
+
+    
 
     // Pushing starting state to queue.
     addBfsLog(`Enqueing ${startState}...`);
@@ -142,6 +146,7 @@ function applyHeuristic(){
     heuristicLog = "";
     heuristicSol = new Array();
     heuristicTimes = new Array();
+    heuristicTree = new Object();
     
     // Start heuristic.
     while(true){
