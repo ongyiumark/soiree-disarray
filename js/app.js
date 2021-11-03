@@ -39,6 +39,8 @@ function applyBfs(){
     bfsLog = "";
     bfsSol = new Array();
     bfsTimes = new Array();
+    bfsTree = new Object();
+    bfsTreePath = new Array();
 
     var parents = new Object();
     var queue = new Array();
@@ -69,6 +71,9 @@ function applyBfs(){
             break;
         }
         addBfsLog(`'${u.state}' is not a goal state. Expanding...`);
+        
+        // Storing children for visualization.  
+        bfsTree[u.state+u.idx.toString()] = new Array();
 
         // Enqueuing child nodes.
         var n = graph[u.state].length;
@@ -83,6 +88,11 @@ function applyBfs(){
             if (i == n-1) addBfsLog("");
             // Mapping state (with its unique queue id) to its parent.
             parents[v+idx.toString()] = u;
+
+            bfsTree[u.state+u.idx.toString()].push({
+                state: v,
+                idx: idx
+            })
         }        
     }
 
@@ -90,11 +100,14 @@ function applyBfs(){
     var tmp = lastState;
     while(tmp.state != startState){
         bfsSol.push(tmp.state);
+        bfsTreePath.push(tmp.state+tmp.idx.toString());
         var par = parents[tmp.state+tmp.idx.toString()];
         tmp = par;
     }
     bfsSol.push(startState);
+    bfsTreePath.push(tmp.state+tmp.idx.toString());
     bfsSol.reverse();
+    bfsTreePath.reverse();
     
     // Calculating time array.
     var currtime = 0;
@@ -117,6 +130,7 @@ function applyBfs(){
     addBfsLog(`The solution is ${bfsSol.join(", ")}.`);
     addBfsLog(`This took ${currtime} units of time.`);
     displaySolution("bfs");
+    buildBfsTree();
 }
 
 // Apply heuristic from 'startState' to 'goalPartition'.
@@ -131,12 +145,14 @@ function applyHeuristic(){
     heuristicLog = "";
     heuristicSol = new Array();
     heuristicTimes = new Array();
+    heuristicTree = new Object();
     
     // Start heuristic.
     while(true){
         // Push the current state and current time to the solution array.
         heuristicSol.push(currentState);
         heuristicTimes.push(time);
+        heuristicTree[currentState] = new Array();
 
         // Checking if 'currentState' is a goal state.
         addHeuristicLog(`Checking if '${currentState}' satisfies the '${goalPartition}' partition...`);
@@ -162,6 +178,14 @@ function applyHeuristic(){
             var state = graph[currentState][i].to;
             var score = heuristicScore(state, goalPartition);
             var weight = graph[currentState][i].weight;
+
+            // Saving for visualization
+            heuristicTree[currentState].push({
+                score: score,
+                weight: weight,
+                state: state,
+                vis: vis[state2idx[state]]
+            });
             
             addHeuristicLog(`Considering going to '${state}'...`);
             // Skip state if already visited.
@@ -203,6 +227,7 @@ function applyHeuristic(){
     addHeuristicLog(`The solution is ${heuristicSol.join(", ")}.`);
     addHeuristicLog(`This took ${time} units of time.`);
     displaySolution("heuristic");
+    buildHeuristicTree();
 }
 
 // Generates the states, the partitions, and the graph.

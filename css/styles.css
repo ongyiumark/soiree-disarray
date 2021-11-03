@@ -126,7 +126,7 @@ body {
 }
 
 .boygirl {
-    border-radius: 100%;
+    border-radius: 10%;
     border: 3px outset #ffce96;
     margin: auto;
     display: inline-block;
