@@ -117,6 +117,7 @@ function applyBfs(){
     addBfsLog(`The solution is ${bfsSol.join(", ")}.`);
     addBfsLog(`This took ${currtime} units of time.`);
     displaySolution("bfs");
+    buildBfsTree();
 }
 
 // Apply heuristic from 'startState' to 'goalPartition'.
@@ -137,6 +138,7 @@ function applyHeuristic(){
         // Push the current state and current time to the solution array.
         heuristicSol.push(currentState);
         heuristicTimes.push(time);
+        heuristicTree[currentState] = new Array();
 
         // Checking if 'currentState' is a goal state.
         addHeuristicLog(`Checking if '${currentState}' satisfies the '${goalPartition}' partition...`);
@@ -162,6 +164,14 @@ function applyHeuristic(){
             var state = graph[currentState][i].to;
             var score = heuristicScore(state, goalPartition);
             var weight = graph[currentState][i].weight;
+
+            // Saving for visualization
+            heuristicTree[currentState].push({
+                score: score,
+                weight: weight,
+                state: state,
+                vis: vis[state2idx[state]]
+            });
             
             addHeuristicLog(`Considering going to '${state}'...`);
             // Skip state if already visited.
@@ -203,6 +213,7 @@ function applyHeuristic(){
     addHeuristicLog(`The solution is ${heuristicSol.join(", ")}.`);
     addHeuristicLog(`This took ${time} units of time.`);
     displaySolution("heuristic");
+    buildHeuristicTree();
 }
 
 // Generates the states, the partitions, and the graph.

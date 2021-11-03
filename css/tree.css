@@ -1,0 +1,67 @@
+#tree {
+    background-color: #ffce96;
+    width: 80%;
+    margin: 20px auto;
+    border-radius: 1em;
+    padding: 1em;
+    color: #00303b;
+    border: 8px solid #ff7777;
+}
+
+/* Remove default bullets */
+#tree-head ul {
+    list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#tree-head {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+    content: "\25B6";
+    color: #00303b;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+    transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.nested {
+    display: none;
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+    display: block;
+}
+
+/* Highlight solution path */
+.solution {
+    font-family: silkscreenbold;
+}
+
+/* Highlight swapped nodes*/
+.swapped {
+    text-decoration: underline;
+    text-decoration-color: #ff7777;
+}
+
+/* Strike through */
+.ignored {
+    text-decoration: line-through;
+    text-decoration-color: #00303b;
+}
