@@ -13,14 +13,12 @@ var time = 0;
 var heuristicSol = new Array();
 var heuristicTimes = new Array();
 var heuristicLog = "";
-var heuristicIdx = 0;
 var vis = new Array();
 
 // BFS Variables
 var bfsSol = new Array();
 var bfsTimes = new Array();
 var bfsLog = "";
-var bfsIdx = 0;
 
 // Run onload.
 function start(){
@@ -52,6 +50,8 @@ function applyBfs(){
         state: startState,
         idx: idx
     });
+
+    // Saving last state to recover path.
     var lastState = new Object();
 
     // Starting BFS.
@@ -87,6 +87,7 @@ function applyBfs(){
             });
             if (i == n-1) addBfsLog("");
             // Mapping state (with its unique queue id) to its parent.
+            // This is because states can be visited multiple times, so we need to way to differentiate them.
             parents[v+idx.toString()] = u;
 
             bfsTree[u.state+u.idx.toString()].push({
@@ -129,6 +130,8 @@ function applyBfs(){
 
     addBfsLog(`The solution is ${bfsSol.join(", ")}.`);
     addBfsLog(`This took ${currtime} units of time.`);
+
+    // Displaying log and building tree.
     displaySolution("bfs");
     buildBfsTree();
 }
@@ -179,7 +182,7 @@ function applyHeuristic(){
             var score = heuristicScore(state, goalPartition);
             var weight = graph[currentState][i].weight;
 
-            // Saving for visualization
+            // Saving for visualization.
             heuristicTree[currentState].push({
                 score: score,
                 weight: weight,
@@ -203,7 +206,7 @@ function applyHeuristic(){
             addHeuristicLog(`'${state}' has a heuristic score of ${score} with cost ${weight}.`);
         }
     
-        // Sort by (score, weight, state)
+        // Sort by (score, weight, state).
         children.sort((left, right) => {
             if (left.score == right.score && left.weight == right.weight){
                 if (left.state < right.state) return -1;
@@ -226,6 +229,8 @@ function applyHeuristic(){
 
     addHeuristicLog(`The solution is ${heuristicSol.join(", ")}.`);
     addHeuristicLog(`This took ${time} units of time.`);
+
+    // Displaying log and building tree.
     displaySolution("heuristic");
     buildHeuristicTree();
 }
