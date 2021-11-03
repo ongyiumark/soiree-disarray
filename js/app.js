@@ -45,8 +45,6 @@ function applyBfs(){
     var parents = new Object();
     var queue = new Array();
 
-    
-
     // Pushing starting state to queue.
     addBfsLog(`Enqueing ${startState}...`);
     var idx = 0;
@@ -107,6 +105,7 @@ function applyBfs(){
         tmp = par;
     }
     bfsSol.push(startState);
+    bfsTreePath.push(tmp.state+tmp.idx.toString());
     bfsSol.reverse();
     bfsTreePath.reverse();
     
