@@ -72,15 +72,14 @@ function displaySolution(solType){
     var imgDiv = div.querySelector(".img-div");
     var buttonDiv = div.querySelector(".button-div")
     var found = false;
+    solIdx = 0;
     if (solType == "heuristic") {
         sol = heuristicSol;
-        solIdx = heuristicIdx;
         solLog = heuristicLog;
         solTimes = heuristicTimes;
     }
     else {
         sol = bfsSol;
-        solIdx = bfsIdx;
         solLog = bfsLog;
         solTimes = bfsTimes;
     }
@@ -88,7 +87,6 @@ function displaySolution(solType){
     // Unhide log div
     var logDiv = document.getElementById("log");
     if (logDiv.getAttribute("hidden") != null) logDiv.removeAttribute("hidden");
-
 
     // Display solution
     var images = new Array();
@@ -105,7 +103,6 @@ function displaySolution(solType){
             imgDiv.appendChild(images[i]);
         } 
     }
-    heuristicIdx = 0;
 
     // Display Log to Screen.
     var logDisp = document.getElementById("log-display");
